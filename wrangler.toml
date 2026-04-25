@@ -1,0 +1,39 @@
+name = "mail-free"
+# name = "mail-exhibit"
+main = "src/server.js"
+compatibility_date = "2024-01-01"
+keep_vars=true
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "TEMP_MAIL_DB"
+database_name = "maill_free_db" #你的d1数据库名称
+database_id = "e058edd9-8df7-4dde-8e21-ac62e7425468" # 你的database_id
+# 登录会话过期时间（单位：天，默认7天）
+# 环境变量
+[vars]
+# FORWARD_RULES="[{"prefix":"vip","email":"a@example.com"},{"prefix":"*","email":"example@qq.com"}]"
+ADMIN_NAME="huanter"
+ADMIN_PASSWORD="a0b59ee4-d718-462f-8277-254c682f2b39"
+GUEST_PASSWORD="9ee1d7ff-435d-4d3a-aafb-01b3fde54272"
+JWT_TOKEN="0e476aaf-ef11-424b-8899-517d27c29d71"
+JWT_TOKENGUEST_PASSWORD="0da93c46-d953-46f1-a547-32046bd0e141"
+SESSION_EXPIRE_DAYS="365"
+MAIL_DOMAIN="extls.com,hivemail.shop,extls.top,121363.xyz,178963.xyz"
+RESEND_API_KEY="re_SzFgjrmA_HR2k6eD2g58R7yJY76F3toSM"
+EMAIL_WEBHOOK_URL="mail-free.extls.pp.ua"
+EMAIL_WEBHOOK_SECRET="d9cc6944-eb9e-48b4-9368-414a422ad785"
+EMAIL_WEBHOOK_TIMEOUT_MS="10000"
+
+
+
+# 静态资源目录（Workers + Assets）
+[assets]
+directory = "public"
+# 显式指定绑定名，确保在 Worker 中通过 env.ASSETS 可用
+binding = "ASSETS"
+
+
+# wrangler.toml (wrangler v3.88.0^) 日志服务
+# [observability.logs]
+# enabled = true
