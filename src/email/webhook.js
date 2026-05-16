@@ -56,11 +56,14 @@ export async function forwardWorkerEmailToWebhook(message, env) {
     });
   }
 
-  return await postEmailWebhook(env, {
+  const payload = {
     message_id: String(messageId || '').trim(),
     to_addr: String(toAddr || '').trim().toLowerCase(),
     raw_content: String(rawContent || '')
-  });
+  };
+
+  console.log(`[Webhook] 准备发送(Email Event) -> to=${payload.to_addr || 'unknown'} message_id=${payload.message_id || 'unknown'}`);
+  return await postEmailWebhook(env, payload);
 }
 
 /**
@@ -87,18 +90,23 @@ export async function forwardHttpEmailToWebhook(emailData, env) {
     html
   });
 
-  return await postEmailWebhook(env, {
+  const payload = {
     message_id: messageId,
     to_addr: String(mailbox || '').trim().toLowerCase(),
     raw_content: rawContent
-  });
+  };
+
+  console.log(`[Webhook] 准备发送(HTTP Receive) -> to=${payload.to_addr || 'unknown'} message_id=${payload.message_id || 'unknown'}`);
+  return await postEmailWebhook(env, payload);
 }
 
 async function postEmailWebhook(env, payload) {
-  const url = String(env?.EMAIL_WEBHOOK_URL || '').trim();
+  const url = resolveWebhookUrl(String(env?.EMAIL_WEBHOOK_URL || '').trim());
   if (!url) {
     throw new Error('EMAIL_WEBHOOK_URL 未配置');
   }
+
+  console.log(`[Webhook] 开始请求 -> url=${url} to=${payload?.to_addr || 'unknown'} message_id=${payload?.message_id || 'unknown'}`);
 
   const timeoutMs = Number.parseInt(String(env?.EMAIL_WEBHOOK_TIMEOUT_MS || '10000'), 10) || 10000;
   const controller = new AbortController();
@@ -116,13 +124,19 @@ async function postEmailWebhook(env, payload) {
     });
 
     const bodyText = await resp.text();
+    console.log(`[Webhook] 请求完成 -> status=${resp.status} ok=${resp.ok} to=${payload?.to_addr || 'unknown'} message_id=${payload?.message_id || 'unknown'}`);
+
     if (!resp.ok) {
+      console.error(`[Webhook] 请求失败 -> status=${resp.status} body=${bodyText}`);
       throw new Error(`Webhook 请求失败: ${resp.status} ${bodyText}`);
     }
 
     try {
-      return JSON.parse(bodyText || '{}');
+      const data = JSON.parse(bodyText || '{}');
+      console.log(`[Webhook] 请求成功 -> response=${JSON.stringify(data)}`);
+      return data;
     } catch (_) {
+      console.log(`[Webhook] 请求成功 -> raw=${bodyText}`);
       return { success: true, raw: bodyText };
     }
   } finally {

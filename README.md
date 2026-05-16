@@ -80,7 +80,7 @@
 | JWT_TOKEN | JWT 签名密钥 | 是 |
 | RESEND_API_KEY | Resend 发件密钥，支持多域名配置 | 否 |
 | EMAIL_WEBHOOK_URL | 收信后转发到外部 API 的基础地址，例如 `https://your-domain.com`；需要你填的EMAIL_WEBHOOK_URL有公网访问 | 否 |
-| EMAIL_WEBHOOK_SECRET | 收信 Webhook 鉴权密钥，将放在 `X-Webhook-Secret` 请求头中，需与后端保持一致 | 否 |
+| EMAIL_WEBHOOK_SECRET | 收信 Webhook 鉴权密钥，需与后端保持一致 | 否 |
 | EMAIL_WEBHOOK_TIMEOUT_MS | 收信 Webhook 请求超时（毫秒，默认 `10000`） | 否 |
 | FORWARD_RULES | 邮件转发规则 | 否 |
 

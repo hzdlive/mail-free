@@ -65,7 +65,19 @@ export default {
   async email(message, env, ctx) {
     if (isWebhookEnabled(env)) {
       try {
-        await forwardWorkerEmailToWebhook(message, env);
+        let rcpt = '';
+        try {
+          const toValue = message?.to;
+          if (Array.isArray(toValue) && toValue.length > 0) {
+            rcpt = typeof toValue[0] === 'string' ? toValue[0] : (toValue[0]?.address || '');
+          } else if (typeof toValue === 'string') {
+            rcpt = toValue;
+          }
+        } catch (_) { }
+
+        console.log(`[Webhook] 收到邮件事件 -> rcpt=${rcpt || 'unknown'}`);
+        const result = await forwardWorkerEmailToWebhook(message, env);
+        console.log(`[Webhook] 转发流程结束 -> rcpt=${rcpt || 'unknown'} result=${JSON.stringify(result)}`);
         return;
       } catch (error) {
         console.error('邮件 Webhook 转发失败:', error);
